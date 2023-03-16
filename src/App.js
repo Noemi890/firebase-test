@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Auth } from "./components/auth";
-import { db } from "./config/firebase";
+import { db, auth } from "./config/firebase";
 import { getDocs, collection, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 function App() {
@@ -29,8 +29,9 @@ function App() {
 
   useEffect(() => {
     getMovieList();
+  // eslint-disable-next-line
   }, []);
-  //
+  
 
   const submitMovie = async () => {
     try {
@@ -38,6 +39,7 @@ function App() {
         title: newMovieTitle,
         releaseDate: newReleaseDate,
         receivedAnOscar: isNewMovieOscar,
+        userId: auth?.currentUser?.uid
       });
 
       getMovieList();

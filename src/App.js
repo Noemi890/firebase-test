@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Auth } from "./components/auth";
-import { db, auth } from "./config/firebase";
+import { db, auth, storage } from "./config/firebase";
 import { getDocs, collection, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
 
 function App() {
   const [movieList, setMovieList] = useState([]);
@@ -11,6 +12,8 @@ function App() {
   const [newReleaseDate, setNewReleaseDate] = useState(0);
   const [isNewMovieOscar, setIsNewMovieOscar] = useState(false);
   const [updateMovieTitle, setUpdateMovieTitle] = useState("")
+
+  const [fileUpload, setFileUpload] = useState(null)
 
   const moviesCollectionRef = collection(db, "movies");
 
@@ -70,6 +73,17 @@ function App() {
     }
   }
 
+  const uploadFile = async () => {
+    if (!fileUpload) return;
+    const filesFolderRef = ref(storage, `projectFiles/${fileUpload.name}`)
+    try {
+      await uploadBytes(filesFolderRef, fileUpload)
+    } catch (err) {
+      console.error(err)
+    }
+
+  }
+
   return (
     <div className="App">
       <Auth />
@@ -105,6 +119,10 @@ function App() {
             </div>
           );
         })}
+      </div>
+      <div>
+        <input type="file" onChange={(e) => setFileUpload(e.target.files[0])} />
+        <button onClick={uploadFile}>upload file</button>
       </div>
     </div>
   );
